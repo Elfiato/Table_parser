@@ -42,7 +42,7 @@ def get_dop_info(data: list, row_num: int, result_dict=None, not_visited_flag=Tr
         return (result_dict[name][1] + '\n' + dop_info).strip()
 
 
-def get_full_el_name(data: list, row_num: int) -> tuple[str, int]:
+def get_full_el_name(data: list, row_num: int):
     """
     Функция формирует полное имя элемента, даже если оно находится на нескольких строках
     """
@@ -52,6 +52,9 @@ def get_full_el_name(data: list, row_num: int) -> tuple[str, int]:
     prefix = get_name_prefix(data[row_num][0])
     while True:
         if data[row_num][1]:
+            name += f'{data[row_num][1]} '
+            row_num += 1
+        elif data[row_num][0]:
             name += f'{data[row_num][1]} '
             row_num += 1
         else:
@@ -88,7 +91,7 @@ def make_el_table(data_table: list) -> dict:
             if data_table[row_num][1] and data_table[row_num][1] != 'Наименование':
                 name, amount_of_str_in_name = get_full_el_name(data_table, row_num)
                 amount = get_amount_of_el(data_table, row_num, amount_of_str_in_name)
-                if name in result:
+                if name in result and isinstance(result[name][0], int):
                     result[name] = [result[name][0] + amount, get_dop_info(data_table, row_num, result, False, name)]
                 else:
                     result[name] = [amount, get_dop_info(data_table, row_num)]
@@ -99,8 +102,8 @@ def make_el_table(data_table: list) -> dict:
 
 def main():
     # Названия входного и выходного файлов
-    input_file = 'PE3.docx'
-    output_file = 'test_output.xlsx'
+    input_file = 'ГИСРЗ  ПЭ3.docx'
+    output_file = 'output_gisrz.xlsx'
 
     # считывание данных из исходного перечня
     f = open(input_file, 'rb')
